@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>포켓몬 도감</title>
+
+    <!-- Open Graph & Twitter Card Tags -->
+    <meta property="og:title" content="Pokédex" />
+    <meta property="og:description" content="간단 포켓몬 도감" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:image"
+      content="https://static.wikia.nocookie.net/pokemon/images/2/21/Pok%C3%A9_Ball.png"
+    />
+    <meta property="og:url" content="https://USERNAME.github.io/REPO_NAME/" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Pokédex" />
+    <meta name="twitter:description" content="간단 포켓몬 도감" />
+    <meta
+      name="twitter:image"
+      content="https://static.wikia.nocookie.net/pokemon/images/2/21/Pok%C3%A9_Ball.png"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @font-face {
+        font-family: "RoundedFixedsys";
+        src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff")
+          format("woff");
+        font-weight: normal;
+        font-display: swap;
+      }
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+      body {
+        font-family: "RoundedFixedsys", sans-serif;
+      }
+      img {
+        image-rendering: pixelated;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-white">
+    <div class="container mx-auto p-4 max-w-5xl">
+      <h1 class="text-4xl font-bold text-center mb-8 text-yellow-400">
+        포켓몬 도감
+      </h1>
+
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8 max-w-md mx-auto">
+        <p class="text-lg text-gray-300 mb-4 text-center">
+          포켓몬 번호를 입력하세요: 1 ~ 1025
+        </p>
+        <div class="flex items-center space-x-2">
+          <button
+            id="prevBtn"
+            class="bg-gray-600 text-white font-bold rounded-md p-2 hover:bg-gray-700 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+          <input
+            id="pokeId"
+            type="number"
+            min="1"
+            placeholder="e.g., 25"
+            class="w-full bg-gray-700 text-white text-center rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          />
+          <button
+            id="nextBtn"
+            class="bg-gray-600 text-white font-bold rounded-md p-2 hover:bg-gray-700 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+          <button
+            id="pokeBtn"
+            class="bg-yellow-400 text-gray-900 font-bold rounded-md p-3 hover:bg-yellow-500 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <section
+        id="pokeBox"
+        class="flex items-center justify-center w-full min-h-[420px] gap-x-4"
+      ></section>
+    </div>
+
+    <script>
+      const typeColors = {
+        normal: "bg-gray-400 text-gray-800",
+        fire: "bg-red-500 text-white",
+        water: "bg-blue-500 text-white",
+        electric: "bg-yellow-400 text-gray-800",
+        grass: "bg-green-500 text-white",
+        ice: "bg-blue-200 text-gray-800",
+        fighting: "bg-red-700 text-white",
+        poison: "bg-purple-500 text-white",
+        ground: "bg-yellow-600 text-white",
+        flying: "bg-indigo-400 text-white",
+        psychic: "bg-pink-500 text-white",
+        bug: "bg-lime-500 text-gray-800",
+        rock: "bg-yellow-700 text-white",
+        ghost: "bg-purple-800 text-white",
+        dragon: "bg-indigo-700 text-white",
+        dark: "bg-gray-700 text-white",
+        steel: "bg-gray-500 text-white",
+        fairy: "bg-pink-300 text-gray-800",
+      };
+      const typeTranslations = {
+        normal: "노말",
+        fire: "불꽃",
+        water: "물",
+        electric: "전기",
+        grass: "풀",
+        ice: "얼음",
+        fighting: "격투",
+        poison: "독",
+        ground: "땅",
+        flying: "비행",
+        psychic: "에스퍼",
+        bug: "벌레",
+        rock: "바위",
+        ghost: "고스트",
+        dragon: "드래곤",
+        dark: "악",
+        steel: "강철",
+        fairy: "페어리",
+      };
+      const pokeBox = document.querySelector("#pokeBox"),
+        pokeIdInput = document.querySelector("#pokeId");
+
+      async function fetchPoke(id, isSprite) {
+        if (id < 1) return null;
+        try {
+          const urls = isSprite
+            ? [`https://pokeapi.co/api/v2/pokemon/${id}`]
+            : [
+                `https://pokeapi.co/api/v2/pokemon/${id}`,
+                `https://pokeapi.co/api/v2/pokemon-species/${id}`,
+              ];
+          const responses = await Promise.all(urls.map((url) => fetch(url)));
+          for (const res of responses)
+            if (!res.ok) throw new Error(`Pokémon with ID ${id} not found.`);
+          const data = await Promise.all(responses.map((res) => res.json()));
+          if (isSprite)
+            return { id: data[0].id, shape: data[0].sprites.front_default };
+          const koName =
+            data[1].names.find((v) => v.language.name === "ko")?.name ||
+            data[0].name;
+          const species =
+            data[1].genera.find((g) => g.language.name === "ko")?.genus ||
+            "Unknown Species";
+          return {
+            id: data[0].id,
+            engName: data[0].name,
+            koName,
+            species,
+            types: data[0].types.map((t) => t.type.name),
+            shape: data[0].sprites.front_default,
+            sound: data[0].cries.latest,
+          };
+        } catch (error) {
+          console.error(error);
+          if (isSprite) return null;
+          throw error;
+        }
+      }
+
+      async function displayPokemonGroup(centerId) {
+        centerId = parseInt(centerId, 10);
+        if (isNaN(centerId) || centerId < 1)
+          return alert("유효한 포켓몬 번호를 입력해주세요.");
+        pokeIdInput.value = centerId;
+        pokeBox.innerHTML = `<p class="text-gray-400">로딩중...</p>`;
+        try {
+          const [prevPoke, currentPoke, nextPoke] = await Promise.all([
+            fetchPoke(centerId - 1, true),
+            fetchPoke(centerId, false),
+            fetchPoke(centerId + 1, true),
+          ]);
+          if (!currentPoke)
+            throw new Error(`Pokémon with ID ${centerId} not found.`);
+          localStorage.setItem("recent", JSON.stringify(currentPoke));
+          renderGroup(prevPoke, currentPoke, nextPoke);
+        } catch (error) {
+          pokeBox.innerHTML = `<p class="text-red-500">${error.message}</p>`;
+        }
+      }
+
+      function renderGroup(prevPoke, currentPoke, nextPoke) {
+        const createSideCard = (poke) => {
+          if (!poke) return '<div class="w-1/3"></div>';
+          return `
+            <div class="w-1/3">
+              <div class="group bg-gray-800 bg-opacity-50 rounded-lg p-6 w-full h-[420px] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-opacity-75 hover:scale-105" onclick="displayPokemonGroup(${poke.id})">
+                <img src="${poke.shape}" alt="Pokémon" class="w-32 h-32 filter blur-sm group-hover:blur-none transition-all duration-300">
+              </div>
+            </div>`;
+        };
+
+        const typesHtml = currentPoke.types
+          .map((type) => {
+            const koType = typeTranslations[type] || type;
+            const colorClass = typeColors[type] || "bg-gray-400 text-gray-800";
+            return `<span class="${colorClass} px-3 py-1 rounded-md text-sm font-bold">${koType}</span>`;
+          })
+          .join(" ");
+
+        const currentHtml = `
+          <div class="w-1/3">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-2xl h-full flex flex-col justify-between">
+              <div class="text-center">
+                <span class="text-gray-400 text-lg">#${String(
+                  currentPoke.id
+                ).padStart(3, "0")}</span>
+                <h2 class="text-3xl font-bold capitalize my-1">${
+                  currentPoke.koName
+                }</h2>
+                <h3 class="text-xl text-gray-400 capitalize mb-3">${
+                  currentPoke.engName
+                }</h3>
+                <h4 class="text-lg text-white mt-2 mb-3">${
+                  currentPoke.species
+                }</h4>
+                <div class="flex flex-wrap justify-center gap-2 mb-4">${typesHtml}</div>
+                <div class="bg-gray-700 rounded-full p-2 inline-block mb-4">
+                  <img src="${currentPoke.shape}" alt="${
+          currentPoke.engName
+        }" class="w-32 h-32">
+                </div>
+                <button id="playCryBtn" class="w-1/2 mx-auto bg-yellow-400 text-gray-900 font-bold rounded-md p-3 hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8v8M8 5v14m4-11v8m4-5v2m4-4v6" /></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </button>
+                <audio id="pokeCry" src="${
+                  currentPoke.sound
+                }" class="hidden"></audio>
+              </div>
+            </div>
+          </div>`;
+
+        pokeBox.innerHTML =
+          createSideCard(prevPoke) + currentHtml + createSideCard(nextPoke);
+
+        const playCryBtn = document.querySelector("#playCryBtn");
+        if (playCryBtn) {
+          playCryBtn.addEventListener("click", () => {
+            const pokeCry = document.querySelector("#pokeCry");
+            if (pokeCry) pokeCry.play();
+          });
+        }
+      }
+
+      const pokeBtn = document.querySelector("#pokeBtn"),
+        prevBtn = document.querySelector("#prevBtn"),
+        nextBtn = document.querySelector("#nextBtn");
+      const changePokemon = (direction) => {
+        const newId = (parseInt(pokeIdInput.value, 10) || 0) + direction;
+        if (newId > 0) displayPokemonGroup(newId);
+      };
+      prevBtn.addEventListener("click", () => changePokemon(-1));
+      nextBtn.addEventListener("click", () => changePokemon(1));
+      pokeBtn.addEventListener("click", () =>
+        displayPokemonGroup(pokeIdInput.value)
+      );
+      pokeIdInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") displayPokemonGroup(pokeIdInput.value);
+      });
+      document.addEventListener("DOMContentLoaded", () => {
+        const r = localStorage.getItem("recent");
+        displayPokemonGroup(r ? JSON.parse(r).id : 393);
+      });
+    </script>
+  </body>
+</html>
